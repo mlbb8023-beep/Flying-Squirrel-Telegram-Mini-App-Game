@@ -96,3 +96,16 @@ button {
     transform-origin: center;
     filter: drop-shadow(2px 4px 3px rgba(0,0,0,0.3));
 }
+/* Поддержка касаний на iPhone */
+button {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#game {
+    touch-action: manipulation;
+}
+
+html, body {
+    -webkit-text-size-adjust: 100%;
+}
