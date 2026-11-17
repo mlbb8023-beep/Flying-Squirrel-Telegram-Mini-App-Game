@@ -17,7 +17,13 @@
         <div id="message">
             <h1>FLYING SQUIRREL</h1>
             <p>Нажми, чтобы начать</p>
-            <button id="startButton" onclick="startGame()">ИГРАТЬ</button>
+            <button id="startButton"
+onclick="try {
+    startGame();
+} catch(e) {
+    alert('ОШИБКА: ' + e.name + ': ' + e.message);
+}">
+ИГРАТЬ</button>
         </div>
     </div>
 
