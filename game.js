@@ -366,8 +366,9 @@ function update() {
 
 // УПРАВЛЕНИЕ КНОПКОЙ ЗАПУСКА
 
-startButton.addEventListener("pointerdown", event => {
+startButton.addEventListener("pointerdown", function(event) {
     event.preventDefault();
+    event.stopPropagation();
     startGame();
 });
 
