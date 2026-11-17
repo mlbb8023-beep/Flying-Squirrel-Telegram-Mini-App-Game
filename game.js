@@ -114,9 +114,6 @@ let velocity = 0;
 let running = false;
 let score = 0;
 let obstacles = [];
-let lastFrameTime = 0;
-let accumulator = 0;
-const FRAME_DURATION = 1000 / 60;
 
 function createLog(element, height, isTop) {
     element.style.position = "absolute";
@@ -308,28 +305,27 @@ function endGame() {
     startButton.textContent = "ИГРАТЬ СНОВА";
 }
 
-// ИГРОВОЙ ЦИКЛ С ФИКСИРОВАННОЙ ФИЗИКОЙ 60 FPS
+// ИГРОВОЙ ЦИКЛ
+
+let lastFrameTime = null;
+let accumulator = 0;
+const FRAME_DURATION = 1000 / 60;
 
 function update(timestamp) {
 
-    if (lastFrameTime === 0) {
+    if (lastFrameTime === null) {
         lastFrameTime = timestamp;
     }
 
     let elapsed = timestamp - lastFrameTime;
     lastFrameTime = timestamp;
 
-    // Защита от больших задержек
     elapsed = Math.min(elapsed, 100);
-
     accumulator += elapsed;
 
-    // Обновляем физику с постоянным шагом
     while (accumulator >= FRAME_DURATION) {
 
         if (running) {
-
-            // ФИЗИКА
 
             velocity += GRAVITY;
             y += velocity;
@@ -344,16 +340,11 @@ function update(timestamp) {
             squirrel.style.transform =
                 `rotate(${angle}deg)`;
 
-            // ДВИЖЕНИЕ ПРЕПЯТСТВИЙ
-
             obstacles.forEach(o => {
-
                 o.x -= SPEED;
 
                 o.top.style.left = o.x + "px";
                 o.bottom.style.left = o.x + "px";
-
-                // НАЧИСЛЕНИЕ ОЧКОВ
 
                 if (
                     !o.passed &&
@@ -361,26 +352,19 @@ function update(timestamp) {
                 ) {
                     o.passed = true;
                     score++;
-
                     scoreElement.textContent = score;
                 }
             });
 
-            // УДАЛЕНИЕ СТАРЫХ ПРЕПЯТСТВИЙ
-
             obstacles = obstacles.filter(o => {
-
                 if (o.x + OBSTACLE_WIDTH < 0) {
                     o.top.remove();
                     o.bottom.remove();
-
                     return false;
                 }
 
                 return true;
             });
-
-            // СОЗДАНИЕ НОВЫХ ПРЕПЯТСТВИЙ
 
             if (
                 obstacles.length === 0 ||
@@ -388,8 +372,6 @@ function update(timestamp) {
             ) {
                 createObstacle();
             }
-
-            // ПРОВЕРКА СТОЛКНОВЕНИЯ
 
             if (collision()) {
                 endGame();
