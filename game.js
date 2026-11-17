@@ -421,5 +421,5 @@ game.addEventListener("pointerdown", event => {
 
 // ЗАПУСК ЦИКЛА
 
-update();
+requestAnimationFrame(update);
 
