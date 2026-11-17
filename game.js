@@ -212,7 +212,7 @@ function startGame() {
 
     score = 0;
     y = 280;
-    velocity = 0;
+    velocity = JUMP_POWER;
 
     scoreElement.textContent = "0";
 
