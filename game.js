@@ -114,6 +114,9 @@ let velocity = 0;
 let running = false;
 let score = 0;
 let obstacles = [];
+let lastFrameTime = 0;
+let accumulator = 0;
+const FRAME_DURATION = 1000 / 60;
 
 function createLog(element, height, isTop) {
     element.style.position = "absolute";
@@ -305,77 +308,100 @@ function endGame() {
     startButton.textContent = "ИГРАТЬ СНОВА";
 }
 
-// ИГРОВОЙ ЦИКЛ
+// ИГРОВОЙ ЦИКЛ С ФИКСИРОВАННОЙ ФИЗИКОЙ 60 FPS
 
-function update() {
-    if (running) {
-        // ФИЗИКА
+function update(timestamp) {
 
-        velocity += GRAVITY;
-        y += velocity;
+    if (lastFrameTime === 0) {
+        lastFrameTime = timestamp;
+    }
 
-        squirrel.style.top = y + "px";
+    let elapsed = timestamp - lastFrameTime;
+    lastFrameTime = timestamp;
 
-        const angle = Math.max(
-            -30,
-            Math.min(50, velocity * 4)
-        );
+    // Защита от больших задержек
+    elapsed = Math.min(elapsed, 100);
 
-        squirrel.style.transform =
-            `rotate(${angle}deg)`;
+    accumulator += elapsed;
 
-        // ДВИЖЕНИЕ ПРЕПЯТСТВИЙ
+    // Обновляем физику с постоянным шагом
+    while (accumulator >= FRAME_DURATION) {
 
-        obstacles.forEach(o => {
-            o.x -= SPEED;
+        if (running) {
 
-            o.top.style.left = o.x + "px";
-            o.bottom.style.left = o.x + "px";
+            // ФИЗИКА
 
-            // НАЧИСЛЕНИЕ ОЧКОВ
+            velocity += GRAVITY;
+            y += velocity;
+
+            squirrel.style.top = y + "px";
+
+            const angle = Math.max(
+                -30,
+                Math.min(50, velocity * 4)
+            );
+
+            squirrel.style.transform =
+                `rotate(${angle}deg)`;
+
+            // ДВИЖЕНИЕ ПРЕПЯТСТВИЙ
+
+            obstacles.forEach(o => {
+
+                o.x -= SPEED;
+
+                o.top.style.left = o.x + "px";
+                o.bottom.style.left = o.x + "px";
+
+                // НАЧИСЛЕНИЕ ОЧКОВ
+
+                if (
+                    !o.passed &&
+                    o.x + OBSTACLE_WIDTH < SQUIRREL_X
+                ) {
+                    o.passed = true;
+                    score++;
+
+                    scoreElement.textContent = score;
+                }
+            });
+
+            // УДАЛЕНИЕ СТАРЫХ ПРЕПЯТСТВИЙ
+
+            obstacles = obstacles.filter(o => {
+
+                if (o.x + OBSTACLE_WIDTH < 0) {
+                    o.top.remove();
+                    o.bottom.remove();
+
+                    return false;
+                }
+
+                return true;
+            });
+
+            // СОЗДАНИЕ НОВЫХ ПРЕПЯТСТВИЙ
 
             if (
-                !o.passed &&
-                o.x + OBSTACLE_WIDTH < SQUIRREL_X
+                obstacles.length === 0 ||
+                obstacles[obstacles.length - 1].x < 220
             ) {
-                o.passed = true;
-                score++;
-
-                scoreElement.textContent = score;
-            }
-        });
-
-        // УДАЛЕНИЕ СТАРЫХ ПРЕПЯТСТВИЙ
-
-        obstacles = obstacles.filter(o => {
-            if (o.x + OBSTACLE_WIDTH < 0) {
-                o.top.remove();
-                o.bottom.remove();
-
-                return false;
+                createObstacle();
             }
 
-            return true;
-        });
+            // ПРОВЕРКА СТОЛКНОВЕНИЯ
 
-        // СОЗДАНИЕ НОВЫХ ПРЕПЯТСТВИЙ
-
-        if (
-            obstacles.length === 0 ||
-            obstacles[obstacles.length - 1].x < 220
-        ) {
-            createObstacle();
+            if (collision()) {
+                endGame();
+            }
         }
 
-        // ПРОВЕРКА СТОЛКНОВЕНИЯ
-
-        if (collision()) {
-            endGame();
-        }
+        accumulator -= FRAME_DURATION;
     }
 
     requestAnimationFrame(update);
 }
+
 
 // УПРАВЛЕНИЕ КНОПКОЙ ЗАПУСКА
 
