@@ -3,6 +3,19 @@ const squirrel = document.getElementById("squirrel");
 const message = document.getElementById("message");
 const startButton = document.getElementById("startButton");
 const scoreElement = document.getElementById("score");
+// Запрет масштабирования страницы на iPhone
+document.addEventListener("gesturestart", function(event) {
+    event.preventDefault();
+}, { passive: false });
+
+document.addEventListener("gesturechange", function(event) {
+    event.preventDefault();
+}, { passive: false });
+
+document.addEventListener("gestureend", function(event) {
+    event.preventDefault();
+}, { passive: false });
+
 
 // НАСТРОЙКИ ИГРЫ
 
