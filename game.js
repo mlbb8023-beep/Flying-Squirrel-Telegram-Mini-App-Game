@@ -96,13 +96,11 @@ if (tg?.CloudStorage) {
     });
 }
 
-
 let y = 280;
 let velocity = 0;
 let running = false;
 let score = 0;
 let obstacles = [];
-
 
 function createLog(element, height, isTop) {
     element.style.position = "absolute";
@@ -159,7 +157,6 @@ function createLog(element, height, isTop) {
 
     element.appendChild(cut);
 }
-
 
 // СОЗДАНИЕ ПРЕПЯТСТВИЙ
 
@@ -237,16 +234,12 @@ function jump() {
 // ПРОВЕРКА СТОЛКНОВЕНИЙ
 
 function collision() {
-    // Границы игрового поля
-
     if (
         y < 0 ||
         y + SQUIRREL_HEIGHT > GAME_HEIGHT
     ) {
         return true;
     }
-
-    // Зона столкновения белки
 
     const playerLeft = SQUIRREL_X + 10;
     const playerRight =
@@ -371,9 +364,14 @@ function update() {
     requestAnimationFrame(update);
 }
 
-// УПРАВЛЕНИЕ
+// УПРАВЛЕНИЕ КНОПКОЙ ЗАПУСКА
 
-startButton.addEventListener("click", startGame);
+startButton.addEventListener("pointerdown", event => {
+    event.preventDefault();
+    startGame();
+});
+
+// УПРАВЛЕНИЕ ПОЛЁТОМ
 
 game.addEventListener("pointerdown", event => {
     if (event.target === startButton) return;
@@ -384,3 +382,4 @@ game.addEventListener("pointerdown", event => {
 // ЗАПУСК ЦИКЛА
 
 update();
+
