@@ -254,9 +254,9 @@ function collision() {
         return true;
     }
 
-    const playerLeft = SQUIRREL_X + 10;
+    const playerLeft = SQUIRREL_X + 20;
     const playerRight =
-        SQUIRREL_X + SQUIRREL_WIDTH - 10;
+        SQUIRREL_X + SQUIRREL_WIDTH - 20;
 
     const playerTop = y + 8;
     const playerBottom =
