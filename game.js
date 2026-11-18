@@ -31,7 +31,7 @@ const GAP = 200;
 
 const GRAVITY = 0.38;
 const JUMP_POWER = -7;
-const SPEED = 2;
+const SPEED = 3;
 
 // СОСТОЯНИЕ
 
